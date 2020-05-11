@@ -93,12 +93,30 @@ function PublishPanel() {
   } = useInspector();
 
   const {
-    state: {
-      meta: { isSaving },
-      story: { author, date, featuredMediaUrl, publisherLogoUrl },
-    },
-    actions: { updateStory },
-  } = useStory();
+    isSaving,
+    author,
+    date,
+    featuredMediaUrl,
+    publisherLogoUrl,
+    updateStory,
+  } = useStory(
+    ({
+      state: {
+        meta: { isSaving },
+        story: { author, date, featuredMediaUrl, publisherLogoUrl },
+      },
+      actions: { updateStory },
+    }) => {
+      return {
+        isSaving,
+        author,
+        date,
+        featuredMediaUrl,
+        publisherLogoUrl,
+        updateStory,
+      };
+    }
+  );
 
   const { timeFormat, capabilities } = useConfig();
 
