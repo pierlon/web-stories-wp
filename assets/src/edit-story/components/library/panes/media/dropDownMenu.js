@@ -19,7 +19,7 @@
  */
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 import DropDownList from '../../../../components/form/dropDown/list';
 import Popup from '../../../../components/popup';
 import { More } from '../../../../components/button';
+import MediaEditDialog from './mediaEditDialog';
 
 const MoreButton = styled(More)`
   position: absolute;
@@ -59,6 +60,7 @@ function DropDownMenu({ resource, pointerEntered, isMenuOpen, setIsMenuOpen }) {
     { name: __('Delete', 'web-stories'), value: 'delete' },
   ];
 
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const moreButtonRef = useRef();
 
   const onClickMoreIcon = useCallback(() => setIsMenuOpen(true), [
@@ -69,7 +71,7 @@ function DropDownMenu({ resource, pointerEntered, isMenuOpen, setIsMenuOpen }) {
     setIsMenuOpen(false);
     switch (value) {
       case 'edit':
-        // TODO(#354): Edit Media Metadata via Media Library Hover Menu
+        setShowEditDialog(true);
         break;
       case 'delete':
         // TODO(#1319): Media Library - Delete via Dropdown Menu from Hover
@@ -86,28 +88,38 @@ function DropDownMenu({ resource, pointerEntered, isMenuOpen, setIsMenuOpen }) {
 
   // Keep icon and menu displayed if menu is open (even if user's mouse leaves the area).
   return (
-    !resource.local && // Don't show menu if resource not uploaded to server yet.
-    (pointerEntered || isMenuOpen) && (
-      <>
-        <MoreButton
-          ref={moreButtonRef}
-          width="28"
-          height="28"
-          onClick={onClickMoreIcon}
-          aria-pressed={isMenuOpen}
-          aria-haspopup={true}
-          aria-expanded={isMenuOpen}
-        />
-        <Popup anchor={moreButtonRef} isOpen={isMenuOpen}>
-          <DropDownContainer>
-            <DropDownList
-              handleCurrentValue={handleCurrentValue}
-              options={options}
-              toggleOptions={toggleOptions}
+    !resource.local && ( // Don't show menu if resource not uploaded to server yet.
+      <div>
+        {(pointerEntered || isMenuOpen) && (
+          <>
+            <MoreButton
+              ref={moreButtonRef}
+              width="28"
+              height="28"
+              onClick={onClickMoreIcon}
+              aria-pressed={isMenuOpen}
+              aria-haspopup={true}
+              aria-expanded={isMenuOpen}
             />
-          </DropDownContainer>
-        </Popup>
-      </>
+            <Popup anchor={moreButtonRef} isOpen={isMenuOpen} width={160}>
+              <DropDownContainer>
+                <DropDownList
+                  handleCurrentValue={handleCurrentValue}
+                  options={options}
+                  toggleOptions={toggleOptions}
+                />
+              </DropDownContainer>
+            </Popup>
+          </>
+        )}
+        {showEditDialog && (
+          <MediaEditDialog
+            resource={resource}
+            showEditDialog={showEditDialog}
+            setShowEditDialog={setShowEditDialog}
+          />
+        )}
+      </div>
     )
   );
 }
