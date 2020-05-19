@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { useState, useCallback, useRef, useEffect, useReducer } from 'react';
+import { useState, useRef, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
@@ -100,9 +100,11 @@ const cardReducer = (state, action) => cardMachine?.[state]?.[action] || state;
 
 const CardPreviewContainer = ({ centerAction, bottomAction, story }) => {
   const { pageSize } = usePagePreviewSize({ isGrid: true });
-  const containElem = useRef(null);
   const [cardState, dispatch] = useReducer(cardReducer, 'idle');
   const [pageIndex, setPageIndex] = useState(0);
+  const containElem = useRef(null);
+
+  useFocusOut(containElem, () => dispatch('deactivate'), []);
 
   useEffect(() => {
     if ('idle' === cardState) {
@@ -110,14 +112,24 @@ const CardPreviewContainer = ({ centerAction, bottomAction, story }) => {
     }
   }, [cardState]);
 
-  const incrementPageIndex = useCallback(
-    () =>
-      'active' === cardState &&
-      setPageIndex((v) => clamp(v + 1, [0, story.pages.length - 1])),
-    [story.pages.length, cardState]
-  );
+  useEffect(() => {
+    let intervalId;
+    if ('active' === cardState) {
+      /**
+       * The interval duration should eventually get pulled off the story schema's
+       * auto advance duration and if no duration provided, use a default.
+       *
+       * Can also incorporate onWAAPIFinish here to make sure the page
+       * doesn't switch before the animations finishes.
+       */
+      intervalId = setInterval(
+        () => setPageIndex((v) => clamp(v + 1, [0, story.pages.length - 1])),
+        2000
+      );
+    }
 
-  useFocusOut(containElem, () => dispatch('deactivate'), []);
+    return () => intervalId && clearInterval(intervalId);
+  }, [story.pages.length, cardState]);
 
   return (
     <>
@@ -126,7 +138,6 @@ const CardPreviewContainer = ({ centerAction, bottomAction, story }) => {
           <PreviewPage
             page={story.pages[pageIndex]}
             animationState={'active' === cardState ? 'animate' : 'idle'}
-            onAnimationComplete={incrementPageIndex}
           />
         </PreviewErrorBoundary>
       </PreviewPane>
