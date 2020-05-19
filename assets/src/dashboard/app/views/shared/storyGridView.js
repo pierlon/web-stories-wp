@@ -34,8 +34,6 @@ import {
   CardTitle,
   CardPreviewContainer,
   ActionLabel,
-  PreviewPage,
-  PreviewErrorBoundary,
 } from '../../../components';
 import { STORY_CONTEXT_MENU_ACTIONS } from '../../../constants';
 import { StoriesPropType, UsersPropType } from '../../../types';
@@ -124,6 +122,7 @@ const StoryGridView = ({
       {stories.map((story) => (
         <CardGridItem key={story.id} isTemplate={isTemplate}>
           <CardPreviewContainer
+            story={story}
             centerAction={{
               targetAction: story.centerTargetAction,
               label: centerActionLabelByStatus[story.status],
@@ -132,11 +131,7 @@ const StoryGridView = ({
               targetAction: story.bottomTargetAction,
               label: bottomActionLabel,
             }}
-          >
-            <PreviewErrorBoundary>
-              <PreviewPage page={story.pages[0]} />
-            </PreviewErrorBoundary>
-          </CardPreviewContainer>
+          />
           {!isTemplate && (
             <DetailRow>
               <CardTitle
