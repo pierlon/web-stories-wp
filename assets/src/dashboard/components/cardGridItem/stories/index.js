@@ -66,6 +66,7 @@ export const _default = () => {
             targetAction: '',
             label: 'Preview',
           }}
+          story={{}}
         >
           <Card>{text('Sample Story Content', 'Sample Story')}</Card>
         </CardPreviewContainer>
@@ -95,6 +96,7 @@ export const _publishedStory = () => {
             targetAction: '',
             label: 'Preview',
           }}
+          story={{}}
         >
           <Card>{text('Sample Story Content', 'Sample Story')}</Card>
         </CardPreviewContainer>
@@ -126,6 +128,7 @@ export const _contextMenu = () => {
               targetAction: '',
               label: 'Preview',
             }}
+            story={{}}
           >
             <Card>{text('Sample Story Content', 'Sample Story')}</Card>
           </CardPreviewContainer>
