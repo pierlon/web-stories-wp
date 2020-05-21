@@ -20,7 +20,7 @@ import { ANIMATION_TYPES } from '../constants';
 import { AnimationBounce } from './bounce';
 import { AnimationBlinkOn } from './blinkOn';
 
-function throughput() {
+export function throughput() {
   return {
     id: -1,
     keyframes: {},
